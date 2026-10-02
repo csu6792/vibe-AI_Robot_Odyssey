@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AI ROBOT ODYSSEY — 生成式 AI × 自主機器人學習航線</title>
+  <meta name="description" content="From Generative AI to Autonomous Robots. An immersive interactive learning journey." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <!-- INTRO OVERLAY -->
+  <div id="intro" class="intro">
+    <div class="intro-core"></div>
+    <div class="intro-title">
+      <h1>AI ROBOT ODYSSEY</h1>
+      <p class="zh">生成式 AI × 自主機器人學習航線</p>
+      <p class="sub">FROM GENERATIVE AI<br/>TO AUTONOMOUS MACHINES</p>
+    </div>
+  </div>
+
+  <!-- TOP HUD -->
+  <header class="hud-top">
+    <div class="hud-left">
+      <div class="logo">AI ROBOT ODYSSEY</div>
+      <div class="tagline">GENERATIVE AI × ROBOTICS</div>
+    </div>
+    <div class="hud-center">
+      <span>LEARN</span><span class="sep">→</span>
+      <span>BUILD</span><span class="sep">→</span>
+      <span>PERCEIVE</span><span class="sep">→</span>
+      <span>THINK</span><span class="sep">→</span>
+      <span>ACT</span>
+    </div>
+    <div class="hud-right">
+      <div class="missions-count"><span id="missions-done">0</span> / 10 MISSIONS</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="global-progress"></div>
+      </div>
+      <div class="progress-pct" id="progress-pct">0%</div>
+    </div>
+  </header>
+
+  <!-- MAIN MAP VIEWPORT -->
+  <main id="map-viewport" class="map-viewport">
+    <div id="map-world" class="map-world">
+      <!-- Background particles canvas -->
+      <canvas id="particles-canvas"></canvas>
+
+      <!-- SVG Route -->
+      <svg id="route-svg" class="route-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#5eead4" />
+            <stop offset="40%" stop-color="#67e8f9" />
+            <stop offset="70%" stop-color="#a78bfa" />
+            <stop offset="100%" stop-color="#34d399" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <path id="route-path" class="route-path" fill="none" stroke="url(#routeGrad)" stroke-width="2.5" filter="url(#glow)" />
+        <path id="route-path-bg" class="route-path-bg" fill="none" stroke="rgba(94,234,212,0.12)" stroke-width="12" />
+      </svg>
+
+      <!-- Energy particles along route -->
+      <div id="energy-particles" class="energy-particles"></div>
+
+      <!-- Station nodes -->
+      <div id="stations-container" class="stations-container"></div>
+
+      <!-- Robot companion -->
+      <div id="robot-companion" class="robot-companion">
+        <div class="robot-body">
+          <div class="robot-core"></div>
+          <div class="robot-eye left"></div>
+          <div class="robot-eye right"></div>
+          <div class="robot-sensor cam"></div>
+          <div class="robot-sensor mic"></div>
+          <div class="robot-wheel left"></div>
+          <div class="robot-wheel right"></div>
+          <div class="robot-arm left"></div>
+          <div class="robot-arm right"></div>
+        </div>
+        <div class="robot-label">COMPANION</div>
+      </div>
+
+      <!-- Final station dramatic elements -->
+      <div id="final-modules" class="final-modules"></div>
+    </div>
+  </main>
+
+  <!-- BOTTOM HUD -->
+  <footer class="hud-bottom">
+    <div class="hud-bottom-left">
+      <div class="current-label">CURRENT MISSION</div>
+      <div class="current-mission" id="current-mission">01 / 10 — GENERATIVE AI</div>
+    </div>
+    <div class="hud-bottom-center">
+      <span class="drag-hint">DRAG TO EXPLORE · SCROLL TO ZOOM</span>
+    </div>
+    <div class="hud-bottom-right">
+      <button id="next-mission-btn" class="next-btn">NEXT MISSION →</button>
+    </div>
+  </footer>
+
+  <!-- LEARNING PANEL (glass) -->
+  <aside id="learning-panel" class="learning-panel">
+    <button class="panel-close" id="panel-close">×</button>
+    <div class="panel-header">
+      <div class="panel-num" id="panel-num">01 / 10</div>
+      <h2 id="panel-title-en">GENERATIVE AI</h2>
+      <h3 id="panel-title-zh">生成式人工智慧</h3>
+      <p id="panel-desc" class="panel-desc"></p>
+    </div>
+    <div class="panel-section">
+      <div class="section-label">YOU WILL LEARN</div>
+      <ul id="panel-topics" class="topics-list"></ul>
+    </div>
+    <div class="panel-section">
+      <div class="section-label">INTERACTIVE LAB</div>
+      <div id="panel-lab" class="lab-area"></div>
+    </div>
+    <div class="panel-section">
+      <div class="section-label">MISSION</div>
+      <p id="panel-mission" class="mission-text"></p>
+      <button id="start-mission-btn" class="mission-btn">START MISSION →</button>
+    </div>
+    <div class="panel-progress">
+      <div class="section-label">STATION PROGRESS</div>
+      <div class="station-progress-bar">
+        <div id="station-progress-fill" class="station-progress-fill"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- STATION LIST OVERLAY (mobile / progress) -->
+  <div id="progress-overlay" class="progress-overlay">
+    <div class="progress-overlay-inner">
+      <h3>AI ROBOT JOURNEY</h3>
+      <div class="big-progress">
+        <div class="big-progress-bar"><div id="big-progress-fill"></div></div>
+        <span id="big-progress-pct">0%</span>
+      </div>
+      <ul id="station-list" class="station-list"></ul>
+      <button id="close-progress" class="close-progress">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- MOBILE VERTICAL JOURNEY (hidden on desktop) -->
+  <div id="mobile-journey" class="mobile-journey"></div>
+
+  <!-- Scripts -->
+  <script src="missions.js"></script>
+  <script src="particles.js"></script>
+  <script src="robot.js"></script>
+  <script src="route.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
